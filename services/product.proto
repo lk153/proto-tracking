@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package go.tracking.services;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "entities/product.proto";
+
+option go_package = "github.com/tikivn/genproto/go/tiki/smart_api/v1/services;services";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Product List API",
+    version: "1.0",
+    description: "Get list of products",
+  },
+  host: "127.0.0.1:8080",
+  schemes: HTTPS,
+  consumes: "application/json",
+  produces: "application/json",
+  responses: {
+    key: "404",
+    value: {
+      description: "Returned when the resource does not exist.",
+      schema: {
+        json_schema: {
+          type: STRING,
+        },
+      },
+    },
+  },
+  responses: {
+    key: "500",
+    value: {
+      description: "Server error",
+      headers: {
+        key: "X-Correlation-Id",
+        value: {
+          description: "Unique event identifier for server requests",
+          type: "string",
+          format: "uuid",
+          default: '"2438ac3c-37eb-4902-adef-ed16b4431030"',
+          pattern: "^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$",
+        },
+      },
+    },
+  },
+};
+
+message ProductRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Get Product Request",
+      description: "Get list of products",
+    },
+    example: "{\"ids\":[77745846,77747072,77750558], \"page\": 1, \"limit\": 20}",
+  };
+
+  repeated uint64 ids = 1 [(validate.rules).message.required = true];;
+  uint32 page = 2 [(validate.rules).message.required = true];;
+  uint32 limit = 3 [(validate.rules).message.required = true];;
+}
+
+message ProductResponse {
+  repeated go.tracking.entities data = 1;
+}
+
+service ProductService {
+  // An endpoint to get ranked products for flash deal
+  rpc Get(ProductRequest) returns (ProductResponse) {
+    option (google.api.http) = {
+      get: "/v1/products"
+    };
+  }
+}
