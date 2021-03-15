@@ -79,7 +79,7 @@ $(PROTOC_GEN_GO):
 		google.golang.org/protobuf/cmd/protoc-gen-go
 
 $(PROTOC_GEN_GO_VALIDATE):
-	@cd /tmp && go get -d github.com/envoyproxy/protoc-gen-validate
+	@cd /tmp && GO111MODULE=auto go get -d github.com/envoyproxy/protoc-gen-validate
 	@make -C $(GOPATH)/src/github.com/envoyproxy/protoc-gen-validate build
 
 $(PROTOC_GEN_GO_JSON):
