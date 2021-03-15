@@ -13,8 +13,7 @@ PROTOC_GEN_GO_VALIDATE :=  $(GOPATH)/bin/protoc-gen-go-validate
 
 # enable marshal go
 GO_JSON_WILL_MARSHAL := \
-	entities/product.proto\
-	services/product.proto
+	entities/product.proto
 
 GO_JSON_MARSHAL	:= $(addprefix go/, $(GO_JSON_WILL_MARSHAL:.proto=.pb.json.go))
 PROTO_GOS 		:= $(addprefix go/, $(PB_ROOT:.proto=.pb.go))
