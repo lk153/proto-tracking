@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package go.tracking.entities;
 
-option go_package = "github.com/lk153/proto-tracking/go/entities";
+option go_package = "github.com/lk153/proto-tracking-gen/go/entities;entities";
 
 message ProductInfo {
     uint32 id = 1;

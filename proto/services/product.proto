@@ -8,7 +8,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 
 import "entities/product.proto";
 
-option go_package = "github.com/lk153/proto-tracking/go/services";
+option go_package = "github.com/lk153/proto-tracking-gen/go/services;services";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
