@@ -49,10 +49,26 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   },
 };
 
+message SingleProductRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Get Product",
+      description: "Get product",
+    },
+    example: "{\"id\":77745846}",
+  };
+
+  uint64 id = 1 [(validate.rules).uint64.gt = 0];
+}
+
+message SingleProductResponse {
+  go.tracking.entities.ProductInfo data = 1;
+}
+
 message ProductRequest {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
-      title: "Get Product Request",
+      title: "Get List Of Product",
       description: "Get list of products",
     },
     example: "{\"ids\":[77745846,77747072,77750558], \"page\": 1, \"limit\": 20}",
@@ -67,11 +83,41 @@ message ProductResponse {
   repeated go.tracking.entities.ProductInfo data = 1;
 }
 
+message ProductCreateRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Create Product",
+      description: "Create Product",
+    },
+    example: "{\"name\": \"product 1\", \"price\": 2000, \"type\": \"simple\", \"status\": 1}",
+  };
+
+  repeated uint64 ids = 1 [(validate.rules).repeated .min_items = 1];
+  uint32 page = 2 [(validate.rules).uint32.gt = 0];
+  uint32 limit = 3 [(validate.rules).uint32.gt = 0];
+}
+
+message ProductCreateResponse {
+  go.tracking.entities.ProductInfo data = 1;
+}
+
 service ProductService {
-  // An endpoint to get ranked products for flash deal
+  rpc GetSingle(SingleProductRequest) returns (SingleProductResponse) {
+    option (google.api.http) = {
+      get: "/v1/product/{id}",
+    };
+  }
+
   rpc Get(ProductRequest) returns (ProductResponse) {
     option (google.api.http) = {
-      get: "/v1/products"
+      get: "/v1/products",
+    };
+  }
+
+  rpc Create(ProductCreateRequest) returns (ProductCreateResponse) {
+    option (google.api.http) = {
+      post: "/v1/product",
+      body: "*",
     };
   }
 }

@@ -4,6 +4,7 @@ GOPATH := $(or ${GOPATH}, ${HOME}/go)
 GO_DEST := ./go
 SPACE := $(EMPTY) $(EMPTY)
 PB_ROOT := $(shell find proto/ -type f -name '*.proto' | cut -c7- )
+PB_ROOT_DOC := $(shell find proto/ -type f -name '*.proto' | cut -c8- )
 PROTOC_GEN_GO:=  $(GOPATH)/bin/protoc-gen-go
 PROTOC_GEN_GO_GRPC:=  $(GOPATH)/bin/protoc-gen-go-grpc
 PROTOC_GEN_GRPC_GATEWAY:=  $(GOPATH)/bin/protoc-gen-grpc-gateway
@@ -71,7 +72,7 @@ docs: $(PROTOC_GEN_OPENAPIV2)
 		--openapiv2_out json_names_for_fields=false:./docs \
 		--openapiv2_opt logtostderr=true\
 		--openapiv2_opt enums_as_ints=true\
-		$(PB_ROOT)
+		$(PB_ROOT_DOC)
 	
 # Install plugin for Google Protocol Buffers
 $(PROTOC_GEN_GO):
