@@ -31,7 +31,7 @@ PROTOC_GO_PLUGINS :=  \
 PROTOC_GO_PLUGINS_ARG :=  $(addprefix --plugin$(SPACE), $(PROTOC_GO_PLUGINS))
 
 # go stuff
-go: vendor $(PROTO_GOS) $(GO_JSON_MARSHAL)
+go: vendor $(PROTO_GOS) $(GO_JSON_MARSHAL) docs
 
 $(GO_DEST)/%.pb.go: proto%.proto $(PROTOC_GO_PLUGINS)
 	@mkdir -p $(@D)
