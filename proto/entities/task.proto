@@ -12,4 +12,6 @@ message TaskInfo {
     uint32 status = 5;
     string creation_time = 6;
     string modification_time = 7;
+    uint32 userId = 8;
+    string remainingTime = 9;
 }
