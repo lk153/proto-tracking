@@ -1,0 +1,17 @@
+version: v1beta1
+build:
+  roots:
+    - proto
+lint:
+  ignore:
+    - google/api
+    - google/rpc
+    - validate
+    - protoc-gen-openapiv2
+    - grpc
+    - internal
+  use:
+    - DEFAULT
+  except:
+    - PACKAGE_AFFINITY
+    - PACKAGE_VERSION_SUFFIX

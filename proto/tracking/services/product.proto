@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package tracking.services;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "tracking/entities/product.proto";
+
+option go_package = "github.com/lk153/proto-tracking-gen/go/services;services";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info : {
+    title : "Product List API",
+    version : "1.0",
+    description : "Get list of products",
+  },
+  host : "127.0.0.1:8080",
+  schemes : HTTPS,
+  consumes : "application/json",
+  produces : "application/json",
+  responses : {
+    key : "404",
+    value : {
+      description : "Returned when the resource does not exist.",
+      schema : {
+        json_schema : {
+          type : STRING,
+        },
+      },
+    },
+  },
+  responses : {
+    key : "500",
+    value : {
+      description : "Server error",
+      headers : {
+        key : "X-Correlation-Id",
+        value : {
+          description : "Unique event identifier for server requests",
+          type : "string",
+          format : "uuid",
+          default : '"2438ac3c-37eb-4902-adef-ed16b4431030"',
+          pattern : "^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-["
+                    "0-9A-F]{12}$",
+        },
+      },
+    },
+  },
+};
+
+message ProductServiceGetSingleRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "Get Product",
+      description : "Get product",
+    },
+    example : "{\"id\":77745846}",
+  };
+
+  uint64 id = 1 [ (validate.rules).uint64.gt = 0 ];
+}
+
+message ProductServiceGetSingleResponse {
+  tracking.entities.ProductInfo data = 1;
+}
+
+message ProductServiceGetRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "Get List Of Product",
+      description : "Get list of products",
+    },
+    example : "{\"ids\":[77745846,77747072,77750558], \"page\": 1, \"limit\": "
+              "20}",
+  };
+
+  repeated uint64 ids = 1 [ (validate.rules).repeated .min_items = 1 ];
+  uint32 page = 2 [ (validate.rules).uint32.gt = 0 ];
+  uint32 limit = 3 [ (validate.rules).uint32.gt = 0 ];
+}
+
+message ProductServiceGetResponse {
+  repeated tracking.entities.ProductInfo data = 1;
+}
+
+message ProductServiceCreateRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "Create Product",
+      description : "Create Product",
+    },
+    example : "{\"name\": \"product 1\", \"price\": 2000, \"type\": "
+              "\"simple\", \"status\": 1}",
+  };
+
+  tracking.entities.ProductInfo data = 1;
+}
+
+message ProductServiceCreateResponse { tracking.entities.ProductInfo data = 1; }
+
+service ProductService {
+  rpc GetSingle(ProductServiceGetSingleRequest)
+      returns (ProductServiceGetSingleResponse) {
+    option (google.api.http) = {
+      get : "/v1/product/{id}",
+    };
+  }
+
+  rpc Get(ProductServiceGetRequest) returns (ProductServiceGetResponse) {
+    option (google.api.http) = {
+      get : "/v1/products",
+    };
+  }
+
+  rpc Create(ProductServiceCreateRequest)
+      returns (ProductServiceCreateResponse) {
+    option (google.api.http) = {
+      post : "/v1/product",
+      body : "*",
+    };
+  }
+}

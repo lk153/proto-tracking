@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package tracking.entities;
+
+option go_package = "github.com/lk153/proto-tracking-gen/go/entities;entities";
+
+message TaskInfo {
+  uint32 id = 1;
+  string name = 2;
+  string start_at = 3;
+  string end_at = 4;
+  uint32 status = 5;
+  string creation_time = 6;
+  string modification_time = 7;
+  uint32 user_id = 8;
+  string remaining_time = 9;
+}

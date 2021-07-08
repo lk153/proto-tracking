@@ -5,18 +5,22 @@ GO_DEST := ./go
 SPACE := $(EMPTY) $(EMPTY)
 PB_ROOT := $(shell find proto/ -type f -name '*.proto' | cut -c7- )
 PB_ROOT_DOC := $(shell find proto/ -type f -name '*.proto' | cut -c8- )
-PROTOC_GEN_GO:=  $(GOPATH)/bin/protoc-gen-go
+PB_SRC       := $(shell find proto -type f -name '*.proto')
+PB_TRACKING_SRC  := $(shell find proto/tracking -type f -name '*.proto')
+
+PROTOC_GEN_GO := $(GOPATH)/bin/protoc-gen-go
 PROTOC_GEN_GO_GRPC:=  $(GOPATH)/bin/protoc-gen-go-grpc
-PROTOC_GEN_GRPC_GATEWAY:=  $(GOPATH)/bin/protoc-gen-grpc-gateway
-PROTOC_GEN_OPENAPIV2 :=  $(GOPATH)/bin/protoc-gen-openapiv2
-PROTOC_GEN_GO_JSON :=  $(GOPATH)/bin/protoc-gen-go-json
-PROTOC_GEN_GO_VALIDATE :=  $(GOPATH)/bin/protoc-gen-go-validate
+PROTOC_GEN_GRPC_GATEWAY := $(GOPATH)/bin/protoc-gen-grpc-gateway
+PROTOC_GEN_OPENAPIV2 := $(GOPATH)/bin/protoc-gen-openapiv2
+PROTOC_GEN_GO_JSON := $(GOPATH)/bin/protoc-gen-go-json
+PROTOC_GEN_GO_VALIDATE := $(GOPATH)/bin/protoc-gen-go-validate
 
 # enable marshal go
 GO_JSON_WILL_MARSHAL := \
-	entities/product.proto
+	entities/product.proto \
+	entities/task.proto
 
-GO_JSON_MARSHAL	:= $(addprefix go/, $(GO_JSON_WILL_MARSHAL:.proto=.pb.json.go))
+GO_JSON_MARSHAL	:= $(addprefix go/tracking/, $(GO_JSON_WILL_MARSHAL:.proto=.pb.json.go))
 PROTO_GOS 		:= $(addprefix go/, $(PB_ROOT:.proto=.pb.go))
 
 INCLUDES := ./proto ./vendor/github.com/envoyproxy/protoc-gen-validate vendor/github.com/grpc-ecosystem/grpc-gateway/v2
@@ -29,6 +33,13 @@ PROTOC_GO_PLUGINS :=  \
 	$(PROTOC_GEN_OPENAPIV2) \
 	$(PROTOC_GEN_GO_VALIDATE)
 PROTOC_GO_PLUGINS_ARG :=  $(addprefix --plugin$(SPACE), $(PROTOC_GO_PLUGINS))
+
+fmt:
+	clang-format -i $(PB_SRC)
+
+lint: $(PROTOC_GEN_GO_VALIDATE)
+	buf lint .
+	clang-format -output-replacements-xml -n --Werror $(PB_TRACKING_SRC)
 
 # go stuff
 go: vendor $(PROTO_GOS) $(GO_JSON_MARSHAL) docs
